@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, ArrowRight, ArrowLeft } from 'lucide-react';
-import IFICON from '@/public/network-interface.svg'
+import IFICOM from '@/public/network-interface.svg'
 import Image from 'next/image';
 // Types
 interface NetworkInterface {
@@ -88,6 +88,12 @@ export default function InterfaceManagement() {
         setSelectedFromAssigned(null);
     };
 
+    const handleInterfaceClick = (iface: NetworkInterface): void => {
+        setSelectedFromAvailable(iface);
+        setAssignFormData({ port: iface.name, ip: iface.ip || '', gateway: iface.gateway || '' });
+        setShowAssignOverlay(true);
+    };
+
     return (
         <>
             {/* Main Content */}
@@ -100,10 +106,11 @@ export default function InterfaceManagement() {
                         {interfaces.map((iface) => (
                             <div
                                 key={iface.id}
-                                className="bg-white border border-gray-300 rounded p-6 flex flex-col items-center relative"
+                                onClick={() => handleInterfaceClick(iface)}
+                                className="bg-white border border-gray-300 rounded p-6 flex flex-col items-center relative cursor-pointer hover:bg-gray-50 transition-colors"
                             >
-                                <div className="w-16 h-16 mb-3">
-                                    <Image src={IFICON} width={64} height={64} alt='' />
+                                <div className="w-16 h-16 mb-3 rounded flex items-center justify-center">
+                                   <Image src={IFICOM} width={64} height={64} alt='' />
                                 </div>
                                 <div className="text-sm text-gray-500 mb-1 absolute left-6 top-6">{iface.id}</div>
                                 <div className="text-center">
@@ -138,8 +145,9 @@ export default function InterfaceManagement() {
 
             {/* Port Configuration Overlay */}
             {showPortConfig && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 max-w-md w-full">
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="absolute inset-0 bg-black opacity-50"></div>
+                    <div className="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold">Port Configuration</h2>
                             <button onClick={() => setShowPortConfig(false)}>
@@ -197,8 +205,9 @@ export default function InterfaceManagement() {
 
             {/* Port Mapping Overlay */}
             {showPortMapping && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 max-w-5xl w-full">
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="absolute inset-0 bg-black opacity-50"></div>
+                    <div className="bg-white rounded-lg p-8 max-w-5xl w-full relative z-10">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold">Port Mapping</h2>
                             <button onClick={() => {
@@ -278,10 +287,11 @@ export default function InterfaceManagement() {
 
             {/* Assign Overlay */}
             {showAssignOverlay && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 max-w-md w-full">
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="absolute inset-0 bg-black opacity-50"></div>
+                    <div className="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold mb-6">Assign Interface</h2>
+                            <h2 className="text-xl font-semibold">Assign Interface</h2>
                             <button onClick={() => {
                                 setShowAssignOverlay(false);
                                 setSelectedFromAvailable(null);
@@ -293,7 +303,7 @@ export default function InterfaceManagement() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block mb-2">Port X</label>
+                                <label className="block mb-2">Port</label>
                                 <input
                                     type="text"
                                     className="w-full border border-gray-300 rounded p-3 bg-gray-50"
