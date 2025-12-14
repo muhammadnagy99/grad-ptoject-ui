@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { X, ArrowRight, ArrowLeft } from 'lucide-react';
 import IFICOM from '@/public/network-interface.svg'
+import IFICOMD from '@/public/network-interface-dark.svg'
+
 import Image from 'next/image';
 // Types
 interface NetworkInterface {
@@ -27,7 +29,7 @@ interface ConfigFormData {
 
 // Mock data
 const mockInterfaces: NetworkInterface[] = [
-    { id: '0', name: 'eth0', status: 'unassigned' },
+    { id: '0', name: 'eth0', status: 'assigned', ip: '192.168.1.11', gateway: '192.168.1.1' },
     { id: '1', name: 'eth1', status: 'unassigned' },
     { id: '2', name: 'eth2', status: 'assigned', ip: '192.168.1.10', gateway: '192.168.1.1' },
     { id: '3', name: 'eth3', status: 'unassigned' },
@@ -101,25 +103,55 @@ export default function InterfaceManagement() {
                 <div className="text-center text-gray-600 mb-6">User's IP address</div>
 
                 {/* Interfaces Grid */}
-                <div className="bg-gray-100 rounded-lg p-8 mb-6">
+                <div className=" rounded-lg p-8 mb-6">
                     <div className="grid grid-cols-4 gap-6">
-                        {interfaces.map((iface) => (
-                            <div
-                                key={iface.id}
-                                onClick={() => handleInterfaceClick(iface)}
-                                className="bg-white border border-gray-300 rounded p-6 flex flex-col items-center relative cursor-pointer hover:bg-gray-50 transition-colors"
-                            >
-                                <div className="w-16 h-16 mb-3 rounded flex items-center justify-center">
-                                   <Image src={IFICOM} width={64} height={64} alt='' />
+                        {interfaces.map((iface) => {
+                            const isAssigned = iface.status === 'assigned';
+
+                            return (
+                                <div
+                                    key={iface.id}
+                                    onClick={() => handleInterfaceClick(iface)}
+                                    className={`
+                        border border-gray-300 rounded p-6 flex flex-col items-center relative cursor-pointer transition-colors
+                        ${isAssigned
+                                            ? 'bg-[#000435] text-white'
+                                            : 'bg-[#D9D9D9] hover:bg-gray-50'
+                                        }
+                    `}
+                                >
+                                    <div className="w-16 h-16 mb-3 rounded flex items-center justify-center">
+                                        <Image
+                                            src={isAssigned ? IFICOMD : IFICOM}
+                                            width={64}
+                                            height={64}
+                                            alt=''
+                                        />
+                                    </div>
+
+                                    {/* ID Label - lighter gray on dark bg for hierarchy, or white if preferred */}
+                                    <div className={`text-sm mb-1 absolute left-6 top-6 ${isAssigned ? 'text-gray-300' : 'text-gray-500'}`}>
+                                        {iface.id}
+                                    </div>
+
+                                    <div className="text-center">
+                                        <div className="font-medium">{iface.name}</div>
+
+                                        {/* Status Label */}
+                                        <div className={`text-sm capitalize ${isAssigned ? 'text-gray-300' : 'text-gray-500'}`}>
+                                            {iface.status}
+                                        </div>
+
+                                        {/* IP Label */}
+                                        {iface.ip && (
+                                            <div className={`text-xs mt-1 ${isAssigned ? 'text-gray-400' : 'text-gray-400'}`}>
+                                                {iface.ip}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="text-sm text-gray-500 mb-1 absolute left-6 top-6">{iface.id}</div>
-                                <div className="text-center">
-                                    <div className="font-medium">{iface.name}</div>
-                                    <div className="text-sm text-gray-500 capitalize">{iface.status}</div>
-                                    {iface.ip && <div className="text-xs text-gray-400 mt-1">{iface.ip}</div>}
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
 
